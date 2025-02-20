@@ -16,7 +16,11 @@
                     </div>
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-4">
-                            <img src="https://via.placeholder.com/100" class="rounded-circle border border-3 border-primary me-3" alt="Avatar">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" class="rounded-circle border border-3 border-primary me-3 w-25" alt="Avatar">
+                            {% else %}
+                                <img src="https://via.placeholder.com/100" class="rounded-circle border border-3 border-primary me-3" alt="Avatar">
+                            {% endif %}
                             <div>
                                 <h4 class="fw-bold mb-1">{{ request.user.first_name }} {{ request.user.last_name }}</h4>
                                 <p class="text-muted mb-0">@{{ request.user.username }}</p>

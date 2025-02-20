@@ -36,7 +36,7 @@ def inscription(request):
         password = request.POST.get("password1")
         confirm_password = request.POST.get("password2")
         user_type = request.POST.get("user_type")
-        avatar = request.POST.get("avatar")
+        avatar = request.FILES.get("avatar")
 
         # Vérifier que les mots de passe correspondent
         if password != confirm_password:
@@ -88,7 +88,7 @@ def editProfile(request):
         email = request.POST["email"]
         first_name = request.POST["first_name"]
         last_name = request.POST["last_name"]
-        avatar = request.POST.get('avatar')
+        avatar = request.FILES.get('avatar')
 
         # Vérification de l'unicité du nom d'utilisateur (s'il est modifié)
         if User.objects.filter(username=username).exclude(id=user.id).exists():

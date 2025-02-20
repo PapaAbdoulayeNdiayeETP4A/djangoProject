@@ -14,24 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# urls.py
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
-
-from authentication.views import connexion, inscription, logout_view, userProfile, editProfile, user_dashboard
-from gtachesapp.views import createProject, addTask, editProject, deleteProject, showProject, showTask
+from django.urls import path, include
 
 urlpatterns = [
-    path('auth/login', connexion, name='connexion'),
-    path('auth/register', inscription, name='inscription'),
-    path('auth/index', user_dashboard, name='userHome'),
-    path('profil/', userProfile, name='userProfile'),
-    path('profil/edit/', editProfile, name='editProfile'),
-    path('logout/', logout_view, name='logout'),
-    path('newproject/', createProject, name='newproject'),
-    path('newproject/<int:project_id>/addtask/', addTask, name='addtask'),
-    path('projects/<int:project_id>/edit/', editProject, name='editProject'),
-    path('projects/<int:project_id>/delete/', deleteProject, name='deleteProject'),
-    path('project/<int:project_id>/', showProject, name='projectDetail'),
-    path('task/<int:task_id>/', showTask, name='taskDetail'),
+    path('auth/', include('authentication.urls_auth')),  # Remplacez `app_name` par le nom de votre application
+    path('', include('authentication.urls_profiles')),
+    path('', include('gtachesapp.urls_projects')),
     path('admin/', admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
