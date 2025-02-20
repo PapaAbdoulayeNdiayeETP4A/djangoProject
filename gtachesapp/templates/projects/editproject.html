@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Modifier un projet</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .edit-container {
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+            background: #fff;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        .btn-custom {
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .form-group label {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container edit-container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center text-primary">Modifier le projet</h2>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} text-center" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="name">Nom du projet</label>
+                                <input type="text" name="name" class="form-control" id="name" value="{{ project.name }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="4">{{ project.description }}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-warning btn-block btn-custom">
+                                Modifier le projet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container dashboard-container mt-5">
+    <h2 class="text-center mb-4">Tableau de Bord</h2>
+
+    {% if no_data %}
+        <div class="alert alert-warning text-center">
+            <h4>Aucune tâche ni projet trouvé.</h4>
+            <p>
+                Vous pouvez <a href="{% url 'newproject' %}" class="btn btn-primary btn-custom">Créer un projet</a> !
+            </p>
+        </div>
+    {% else %}
+
+        {% if projects %}
+            <div class="row">
+                {% for project in projects %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card project-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ project.name }}</h5>
+                                <p class="card-text text-muted">{{ project.description }}</p>
+                                <a href="{% url 'addtask' project.id %}" class="btn btn-success btn-sm btn-custom">+ Tâche</a>
+                                <a href="{% url 'editProject' project.id %}" class="btn btn-warning btn-sm btn-custom">Modifier</a>
+                                <form action="{% url 'deleteProject' project.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('Voulez-vous vraiment supprimer ce projet ?')">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if tasks %}
+            <div class="row">
+                {% for task in tasks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card task-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ task.title }}</h5>
+                                <p class="card-text text-muted">Statut : {{ task.get_status_display }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    {% endif %}
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .dashboard-container {
+        margin-top: 50px;
+    }
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+        background: #fff;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .btn-custom {
+        border-radius: 20px;
+    }
+    .project-card {
+        border-left: 5px solid #007bff;
+    }
+    .task-card {
+        border-left: 5px solid #28a745;
+    }
+</style>
+
+{% endblock %}
