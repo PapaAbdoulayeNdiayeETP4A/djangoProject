@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-success">{{ task.title }}</h2>
+    <p><strong>Statut :</strong> {{ task.get_status_display }}</p>
+
+    <a href="{% url 'userHome' %}" class="btn btn-secondary">Retour</a>
+</div>
+{% endblock %}

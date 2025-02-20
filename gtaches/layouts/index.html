@@ -19,11 +19,11 @@
                 {% if user.is_authenticated %}
                     {% if user.is_student %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'studentHome' %}">Accueil Étudiant</a>
+                            <a class="nav-link" href="{% url 'userHome' %}">Accueil Étudiant</a>
                         </li>
                     {% elif user.is_teacher %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/auth-professor/index">Accueil Professeur</a>
+                            <a class="nav-link" href="{% url 'userHome' %}">Accueil Professeur</a>
                         </li>
                     {% endif %}
                     <li class="nav-item active">

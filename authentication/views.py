@@ -7,6 +7,7 @@ from authentication.models import User
 
 
 # Create your students_views here.
+from gtachesapp.models import Task, Project
 
 
 def connexion(request):
@@ -19,10 +20,9 @@ def connexion(request):
         if user is not None:
             auth_login(request, user)  # Connecter l'utilisateur
             messages.success(request, f"Bienvenue, {user.username} !")
-            if user.is_student:
-                return redirect('studentHome')
-            else:
-                return redirect("auth-professor/index")
+            if user.is_student or user.is_teacher:
+                return redirect('userHome')
+
         else:
             messages.error(request, "Email ou mot de passe incorrect.")
 
@@ -60,7 +60,7 @@ def inscription(request):
             my_user.save()
         else:
             # Créer l'utilisateur
-            my_user = User.objects.create_user(
+            my_user = User.objects.create(
                 username=username,
                 password=make_password(password),
                 email=email,
@@ -106,6 +106,21 @@ def editProfile(request):
             return redirect("userProfile")  # Redirection vers le profil
 
     return render(request, "profiles/editprofile.html")
+
+
+def user_dashboard(request):
+    user = request.user
+    tasks = Task.objects.filter(assigned_to_id=user.id)
+    projects = Project.objects.filter(owner=user)
+
+    # Vérifie si l'étudiant n'a ni tâche ni projet
+    no_data = not tasks and not projects
+
+    return render(request, 'home/index.html', {
+        'tasks': tasks,
+        'projects': projects,
+        'no_data': no_data
+    })
 
 
 def logout_view(request):

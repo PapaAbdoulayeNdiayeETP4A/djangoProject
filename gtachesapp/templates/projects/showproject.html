@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-primary">{{ project.name }}</h2>
+    <p>{{ project.description }}</p>
+
+    <a href="{% url 'editProject' project.id %}" class="btn btn-warning">Modifier</a>
+    <form action="{% url 'deleteProject' project.id %}" method="POST" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous supprimer ce projet ?')">Supprimer</button>
+    </form>
+
+    <a href="{% url 'userHome' %}" class="btn btn-secondary">Retour</a>
+
+    <h3 class="mt-4">Tâches associées</h3>
+    {% if project.tasks.all %}
+        <div class="row">
+            {% for task in project.tasks.all %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ task.title }}</h5>
+                            <p class="card-text">{{ task.description|truncatewords:20 }}</p> <!-- Limiter la description pour une meilleure lisibilité -->
+                            <p class="text-muted">Statut: <strong>{{ task.status }}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Aucune tâche associée à ce projet.</p>
+    {% endif %}
+</div>
+{% endblock %}

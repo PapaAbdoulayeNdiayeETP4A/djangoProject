@@ -35,9 +35,19 @@ def editProject(request, project_id):
         project.description = request.POST.get('description')
         project.save()
         messages.success(request, "Projet modifié avec succès !")
-        return redirect('studentHome')  # Redirige vers la liste des projets
+        return redirect('userHome')  # Redirige vers la liste des projets
 
     return render(request, 'projects/editproject.html', {'project': project})
+
+
+def showProject(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    return render(request, 'projects/showproject.html', {'project': project})
+
+
+def showTask(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'tasks/showtask.html', {'task': task})
 
 
 def deleteProject(request, project_id):
@@ -46,9 +56,9 @@ def deleteProject(request, project_id):
     if request.method == "POST":
         project.delete()
         messages.success(request, "Projet supprimé avec succès !")
-        return redirect('studentHome')  # Redirige après suppression
+        return redirect('userHome')  # Redirige après suppression
 
-    return redirect('studentHome')
+    return redirect('userHome')
 
 
 def addTask(request, project_id):

@@ -17,21 +17,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from authentication.views import connexion, inscription, logout_view, userProfile, editProfile
-from gtachesapp.views import createProject, addTask, editProject, deleteProject
-from students.views import student_dashboard
+from authentication.views import connexion, inscription, logout_view, userProfile, editProfile, user_dashboard
+from gtachesapp.views import createProject, addTask, editProject, deleteProject, showProject, showTask
 
 urlpatterns = [
     path('auth/login', connexion, name='connexion'),
     path('auth/register', inscription, name='inscription'),
-    path('auth-student/index', student_dashboard, name='studentHome'),
+    path('auth/index', user_dashboard, name='userHome'),
     path('profil/', userProfile, name='userProfile'),
     path('profil/edit/', editProfile, name='editProfile'),
     path('logout/', logout_view, name='logout'),
-    #path('auth-professor/index', professor_dashboard, name='student_home'),
     path('newproject/', createProject, name='newproject'),
     path('newproject/<int:project_id>/addtask/', addTask, name='addtask'),
     path('projects/<int:project_id>/edit/', editProject, name='editProject'),
     path('projects/<int:project_id>/delete/', deleteProject, name='deleteProject'),
+    path('project/<int:project_id>/', showProject, name='projectDetail'),
+    path('task/<int:task_id>/', showTask, name='taskDetail'),
     path('admin/', admin.site.urls),
 ]
