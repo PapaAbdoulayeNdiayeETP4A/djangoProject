@@ -4,7 +4,7 @@ from rest_framework import generics
 
 from authentication.models import User
 from gtachesapp.models import Project, Task
-from gtachesapp.serializers import ProjectSerializer
+from gtachesapp.serializers import ProjectSerializer, TaskSerializer
 
 
 def createProject(request):
@@ -105,3 +105,13 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 class ProjectUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+
+class TaskListCreateView(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class TaskUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
