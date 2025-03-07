@@ -16,6 +16,9 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Project(models.Model):
     name = models.CharField(max_length=255)  # Nom du projet
@@ -24,6 +27,9 @@ class Project(models.Model):
     members = models.ManyToManyField('authentication.User', related_name='project_members')  # Membres du projet
     created_at = models.DateTimeField(auto_now_add=True)  # Date de création
     updated_at = models.DateTimeField(auto_now=True)  # Date de mise à jour
+
+    def __str__(self):
+        return self.name
 
 
 class Evaluation(models.Model):
