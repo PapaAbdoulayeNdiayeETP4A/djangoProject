@@ -1,7 +1,10 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework import generics
+
 from authentication.models import User
 from gtachesapp.models import Project, Task
+from gtachesapp.serializers import ProjectSerializer
 
 
 def createProject(request):
@@ -92,3 +95,13 @@ def addTask(request, project_id):
         messages.error(request, "Le titre de la tâche est requis.")
 
     return render(request, "tasks/addtask.html", {"project": project, "users": users})
+
+
+class ProjectListCreateView(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+
+class ProjectUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
