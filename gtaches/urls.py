@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('auth/', include('authentication.urls_auth')),  # Remplacez `app_name` par le nom de votre application
+    path('auth/', include('authentication.urls_auth')),
     path('', include('authentication.urls_profiles')),
     path('', include('gtachesapp.urls_projects')),
     path('admin/', admin.site.urls),
