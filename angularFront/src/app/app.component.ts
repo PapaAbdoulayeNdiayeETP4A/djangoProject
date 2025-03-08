@@ -6,10 +6,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { LoginComponent } from './login/login.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, HttpClientModule, ProjectComponent, TaskComponent, RegistrationComponent],
+  imports: [CommonModule, HttpClientModule, ProjectComponent, TaskComponent, RegistrationComponent, LoginComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [ApiService]

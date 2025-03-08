@@ -1,1 +1,6 @@
-<p>login works!</p>
+<div style="text-align: center;">
+    <h1>Login</h1>
+    <input [(ngModel)]="login.username" placeholder="username"><br>
+    <input [(ngModel)]="login.password" type="password" placeholder="password"><br>
+    <button (click)="loginUser()">Login</button><br>
+</div>
