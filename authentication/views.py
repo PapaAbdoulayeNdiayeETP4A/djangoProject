@@ -4,7 +4,8 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from rest_framework import generics
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from authentication.models import User
 from authentication.serializers import UserSerializer
 from gtachesapp.models import Task, Project
@@ -136,4 +137,5 @@ class UserListCreateView(generics.ListCreateAPIView):
 class UserUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    authentication_classes = {TokenAuthentication}
+    permission_classes = {IsAuthenticated}
