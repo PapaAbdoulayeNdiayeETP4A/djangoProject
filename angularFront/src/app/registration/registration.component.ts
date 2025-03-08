@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
-import { response } from 'express';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-registration',
-  imports: [FormsModule],
+  imports: [FormsModule, HttpClientModule],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss',
   providers: [UserService]
