@@ -7,11 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class UserService {
 
-  baseUrl = 'http://127.0.0.1:8000/api/user/';
+  registerUrl = 'http://127.0.0.1:8000/api/user/';
+  loginUrl = 'http://127.0.0.1:8000/auth/';
 
   constructor(private http: HttpClient) { }
 
   registerUser(userData: any): Observable<any> {
-    return this.http.post(this.baseUrl, userData);
+    return this.http.post(this.registerUrl, userData);
+  }
+
+  loginUser(userData: any): Observable<any> {
+    return this.http.post(this.loginUrl, userData);
   }
 }
