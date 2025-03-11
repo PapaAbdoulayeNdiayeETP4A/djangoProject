@@ -10,8 +10,8 @@ class Task(models.Model):
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tasks')
     assigned_to = models.ForeignKey('authentication.User', on_delete=models.SET_NULL, null=True, blank=True,
                                     related_name='tasks')  # Utilisateur assigné
-    status = models.CharField(max_length=20, choices=[('pending', 'En attente'), ('in_progress', 'En cours'),
-                                                      ('completed', 'Terminée')], default='pending')
+    status = models.CharField(max_length=20, choices=[('to_do', 'A faire'), ('in_progress', 'En cours'),
+                                                      ('completed', 'Terminée')], default='to_do')
     due_date = models.DateField()  # Date limite
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
