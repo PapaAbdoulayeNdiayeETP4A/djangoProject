@@ -4,14 +4,13 @@ from gtachesapp.serializers import ProjectSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    projects = ProjectSerializer(many=True)
-
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_teacher', 'is_student', 'avatar', 'projects')
+        fields = ('id', 'username', 'email', 'password', 'is_teacher', 'is_student', 'avatar')
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
-        def create(self, validated_data):
-            # Make sure that password passing through HTTP to be hashed
-            user = User.objects.create_user(**validated_data)
-            return user
+    def create(self, validated_data):
+        # Assurez-vous que le mot de passe est haché
+        password = validated_data.pop('password')  # Récupère et supprime le mot de passe des données validées
+        user = User.objects.create_user(password=password, **validated_data)  # Hash automatiquement le mot de passe
+        return user
