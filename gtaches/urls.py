@@ -21,6 +21,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from authentication.views import get_user_info
+
 urlpatterns = [
     path('auth/', include('authentication.urls_auth')),
     path('', include('authentication.urls_profiles')),
@@ -28,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('user-info/', get_user_info, name='user-info')
 ]
 
 if settings.DEBUG:
