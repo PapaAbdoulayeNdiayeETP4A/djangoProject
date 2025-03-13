@@ -3,6 +3,7 @@ import { UserService } from '../services/user.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,21 +14,15 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class LoginComponent {
 
-  login: any;
+  login: any = { username: '', password: '' };
 
-  constructor(private userService: UserService) { }
-
-  ngOnInit() {
-    this.login = {
-      username: '',
-      password: ''
-    }
-  }
+  constructor(private userService: UserService, private router: Router) { }
 
   loginUser() {
     this.userService.loginUser(this.login).subscribe(
       response => {
         alert('User ' + this.login.username + ' logged successfully');
+        this.router.navigate(['/dashboard']);
       },
       error => {
         console.log(error);

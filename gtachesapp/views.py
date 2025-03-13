@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import User
 from gtachesapp.models import Project, Task
@@ -100,18 +101,22 @@ def addTask(request, project_id):
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = {IsAuthenticated}
 
 
 class ProjectUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = {IsAuthenticated}
 
 
 class TaskListCreateView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = {IsAuthenticated}
 
 
 class TaskUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = {IsAuthenticated}
