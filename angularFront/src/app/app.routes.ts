@@ -3,6 +3,7 @@ import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 
 export const routes: Routes = [
+    { path: 'dashboard', component: RegistrationComponent },
     { path: 'auth/login', component: LoginComponent },
     { path: 'auth/register', component: RegistrationComponent },
     { path: '', redirectTo: '/auth/login', pathMatch: 'full' },

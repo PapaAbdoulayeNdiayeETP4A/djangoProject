@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class UserService {
 
   registerUrl = 'http://127.0.0.1:8000/api/user/';
-  loginUrl = 'http://127.0.0.1:8000/auth/';
+  loginUrl = 'http://127.0.0.1:8000/api/token/';
 
   constructor(private http: HttpClient) { }
 
@@ -17,6 +17,20 @@ export class UserService {
   }
 
   loginUser(userData: any): Observable<any> {
-    return this.http.post(this.loginUrl, userData);
+    return this.http.post<{access: string, refresh: string}>(this.loginUrl, userData).pipe(
+      tap(response => {
+        localStorage.setItem('access_token', response.access);
+        localStorage.setItem('refresh_token', response.refresh);
+      })
+    );
+  }
+
+  logoutUser() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  }
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('access_token');
   }
 }

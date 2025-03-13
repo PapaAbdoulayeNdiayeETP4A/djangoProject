@@ -35,4 +35,8 @@ export class RegistrationComponent implements OnInit {
     )
   }
 
+  logOut() {
+    this.userService.logoutUser();
+  }
+
 }

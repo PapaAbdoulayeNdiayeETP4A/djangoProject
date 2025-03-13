@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
     def create(self, validated_data):
-        # Assurez-vous que le mot de passe est haché
-        password = validated_data.pop('password')  # Récupère et supprime le mot de passe des données validées
-        user = User.objects.create_user(password=password, **validated_data)  # Hash automatiquement le mot de passe
+        # We try to hash the password
+        password = validated_data.pop('password')  # We collect and delete the password from validated data
+        user = User.objects.create_user(password=password, **validated_data)  # Encrypt password
         return user
