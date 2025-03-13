@@ -6,7 +6,6 @@ import { Observable, switchMap, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-    console.log("🔹 Intercepteur activé pour :", req.url);
 
     if (req.url.includes('/api/token/refresh/')) {
         return next(req);
