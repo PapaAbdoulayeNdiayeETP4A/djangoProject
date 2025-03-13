@@ -18,15 +18,21 @@ export class LoginComponent {
   constructor(private userService: UserService, private router: Router) { }
 
   loginUser() {
-    this.userService.loginUser(this.login).subscribe(
-      response => {
-        alert('User ' + this.login.username + ' logged successfully');
-        this.router.navigate(['/dashboard']);
+    this.userService.loginUser(this.login).subscribe({
+      next: () => {
+        const isStudent = localStorage.getItem('is_student') === 'true';
+        const isTeacher = localStorage.getItem('is_teacher') === 'true';
+  
+        if (isStudent) {
+          this.router.navigate(['/dashboard/etudiant']);
+        } else if (isTeacher) {
+          this.router.navigate(['/dashboard/professor']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
-      error => {
-        console.log(error);
-      }
-    )
+      error: err => console.error("Erreur de connexion", err),
+    });
   }
 
 }

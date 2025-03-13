@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, throwError } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+import { Observable, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,39 @@ export class UserService {
       tap(response => {
         localStorage.setItem('access_token', response.access);
         localStorage.setItem('refresh_token', response.refresh);
+      }),
+      switchMap(() => this.getUserInfo())
+    );
+  }
+
+
+  getUserIdFromToken(): number | null {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+  
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.user_id;
+    } catch (error) {
+      console.error("Erreur de décodage du token :", error);
+      return null;
+    }
+  }
+
+  getUserInfo(): Observable<any> {
+    const userId = this.getUserIdFromToken();
+    const token = localStorage.getItem('access_token');
+    if (!token) return throwError(() => new Error("Pas de token disponible"));
+    if (!userId) return throwError(() => new Error("Impossible de récupérer l'ID utilisateur"));
+
+    const userInfoUrl = `http://127.0.0.1:8000/api/user/${userId}`;
+
+    return this.http.get<{ is_student: boolean, is_teacher: boolean }>(userInfoUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).pipe(
+      tap(user => {
+        localStorage.setItem('is_student', user.is_student ? 'true' : 'false');
+        localStorage.setItem('is_teacher', user.is_teacher ? 'true' : 'false');
       })
     );
   }
