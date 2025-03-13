@@ -5,7 +5,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from authentication.models import User
 from authentication.serializers import UserSerializer
 from gtachesapp.models import Task, Project
@@ -138,3 +141,18 @@ class UserUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = {IsAuthenticated}
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'is_student': user.is_student,
+        'is_teacher': user.is_teacher,
+    })

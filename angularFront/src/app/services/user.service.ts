@@ -28,7 +28,7 @@ export class UserService {
   }
 
 
-  getUserIdFromToken(): number | null {
+  /*getUserIdFromToken(): number | null {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
   
@@ -39,20 +39,20 @@ export class UserService {
       console.error("Erreur de décodage du token :", error);
       return null;
     }
-  }
+  }*/
 
   getUserInfo(): Observable<any> {
-    const userId = this.getUserIdFromToken();
     const token = localStorage.getItem('access_token');
     if (!token) return throwError(() => new Error("Pas de token disponible"));
-    if (!userId) return throwError(() => new Error("Impossible de récupérer l'ID utilisateur"));
 
-    const userInfoUrl = `http://127.0.0.1:8000/api/user/${userId}`;
+    const userInfoUrl = `http://127.0.0.1:8000/user-info`;
 
-    return this.http.get<{ is_student: boolean, is_teacher: boolean }>(userInfoUrl, {
+    return this.http.get<{id: number, email: string, is_student: boolean, is_teacher: boolean }>(userInfoUrl, {
       headers: { Authorization: `Bearer ${token}` }
     }).pipe(
       tap(user => {
+        localStorage.setItem('user_id', user.id.toString());
+        localStorage.setItem('user_email', user.email);
         localStorage.setItem('is_student', user.is_student ? 'true' : 'false');
         localStorage.setItem('is_teacher', user.is_teacher ? 'true' : 'false');
       })
