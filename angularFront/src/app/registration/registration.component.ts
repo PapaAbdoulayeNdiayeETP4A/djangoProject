@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
-import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-registration',
-  imports: [FormsModule, HttpClientModule],
+  imports: [FormsModule],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss',
   providers: [UserService]
@@ -36,7 +35,17 @@ export class RegistrationComponent implements OnInit {
   }
 
   logOut() {
-    this.userService.logoutUser();
+    this.userService.logoutUser().subscribe(
+      response => {
+        console.log("Réponse API :", response);
+      },
+      error => {
+        console.log(error);
+      }
+    );
+
   }
+
+  
 
 }
