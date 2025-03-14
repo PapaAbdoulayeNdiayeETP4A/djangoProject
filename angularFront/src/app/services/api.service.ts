@@ -16,6 +16,11 @@ export class ApiService {
     return this.http.get(this.baseUrl + '/api/project/', {headers: this.httpHeaders});
   }
 
+  createProject(project: any): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    return this.http.post(this.baseUrl + '/api/project/', project, {headers: { Authorization: `Bearer ${token}`}});
+  }
+
   getAllTasks(): Observable<any> {
     return this.http.get(this.baseUrl + '/api/task/', {headers: this.httpHeaders});
   }

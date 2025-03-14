@@ -47,14 +47,32 @@ export class UserService {
 
     const userInfoUrl = `http://127.0.0.1:8000/user-info`;
 
-    return this.http.get<{id: number, email: string, is_student: boolean, is_teacher: boolean }>(userInfoUrl, {
+    return this.http.get<{ id: number, username: string, email: string, is_student: boolean, is_teacher: boolean, projects: any }>(userInfoUrl, {
       headers: { Authorization: `Bearer ${token}` }
     }).pipe(
       tap(user => {
         localStorage.setItem('user_id', user.id.toString());
         localStorage.setItem('user_email', user.email);
+        localStorage.setItem('user_username', user.username);
         localStorage.setItem('is_student', user.is_student ? 'true' : 'false');
         localStorage.setItem('is_teacher', user.is_teacher ? 'true' : 'false');
+
+        if (user.projects) {
+          localStorage.setItem('user_projects', JSON.stringify(user.projects));
+        }
+
+        if (user.projects && user.projects.length > 0) {
+          const allTasks = user.projects.reduce((tasks: any, project: any) => {
+            if (project.tasks && project.tasks.length > 0) {
+              return [...tasks, ...project.tasks];
+            }
+            return tasks;
+          }, []);
+
+          if (allTasks.length > 0) {
+            localStorage.setItem('user_tasks', JSON.stringify(allTasks));
+          }
+        }
       })
     );
   }

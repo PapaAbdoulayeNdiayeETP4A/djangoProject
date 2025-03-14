@@ -147,12 +147,5 @@ class UserUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
     user = request.user
-    return Response({
-        'id': user.id,
-        'username': user.username,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'email': user.email,
-        'is_student': user.is_student,
-        'is_teacher': user.is_teacher,
-    })
+    serialized_user = UserSerializer(user).data
+    return Response(serialized_user)

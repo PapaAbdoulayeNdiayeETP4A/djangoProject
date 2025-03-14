@@ -4,9 +4,11 @@ from gtachesapp.serializers import ProjectSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
+    projects = ProjectSerializer(many=True, required=False, read_only=True)
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_teacher', 'is_student', 'avatar')
+        fields = ('id', 'username', 'email', 'password', 'is_teacher', 'is_student', 'avatar', 'projects')
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
     def create(self, validated_data):
