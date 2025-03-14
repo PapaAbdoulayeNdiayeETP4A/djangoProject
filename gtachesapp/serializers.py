@@ -9,7 +9,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    tasks = TaskSerializer(many=True)
+    tasks = TaskSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = Project
