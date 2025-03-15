@@ -37,4 +37,8 @@ export class ApiService {
     return this.http.delete(this.baseUrl + '/api/task/' + taskId);
   }
 
+  assignTask(task: any): Observable<any> {
+    return this.http.put(this.baseUrl + '/api/task/' + task.id, task);
+  }
+
 }
