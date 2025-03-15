@@ -1,7 +1,36 @@
-<div style="text-align: center;">
-    <h1>Login</h1>
-    <input [(ngModel)]="login.username" placeholder="username"><br>
-    <input [(ngModel)]="login.password" type="password" placeholder="password"><br>
-    <button (click)="loginUser()">Login</button><br>
-    <li><a routerLink="/auth/register" routerLinkActive="active" ariaCurrentWhenActive="page">S'inscrire</a></li>
-</div>
+<div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Connexion</h1>
+        <p class="auth-subtitle">Accédez à votre espace</p>
+      </div>
+      
+      <div class="auth-form">
+        <div class="form-group">
+          <label for="username">Nom d'utilisateur</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input id="username" [(ngModel)]="login.username" placeholder="Entrez votre nom d'utilisateur">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input id="password" [(ngModel)]="login.password" type="password" placeholder="Entrez votre mot de passe">
+          </div>
+        </div>
+        
+        <div class="auth-actions">
+          <button class="btn-primary" (click)="loginUser()">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+          </button>
+        </div>
+      </div>
+      
+      <div class="auth-footer">
+        <p>Pas encore de compte ? <a routerLink="/auth/register" routerLinkActive="active">S'inscrire</a></p>
+      </div>
+    </div>
+  </div>

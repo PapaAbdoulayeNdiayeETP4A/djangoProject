@@ -1,8 +1,44 @@
-<div style="text-align: center;">
-    <h1>Registration</h1>
-    <input [(ngModel)]="register.username" placeholder="username"><br>
-    <input [(ngModel)]="register.password" type="password" placeholder="password"><br>
-    <input [(ngModel)]="register.email" placeholder="email"><br>
-    <button (click)="registerUser()">Register</button><br>
-    <button (click)="logOut()">Déconnexion</button><br>
-</div>
+<div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Inscription</h1>
+        <p class="auth-subtitle">Créez votre compte étudiant</p>
+      </div>
+      
+      <div class="auth-form">
+        <div class="form-group">
+          <label for="reg-username">Nom d'utilisateur</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input id="reg-username" [(ngModel)]="register.username" placeholder="Choisissez un nom d'utilisateur">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input id="reg-email" [(ngModel)]="register.email" type="email" placeholder="Entrez votre adresse email">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="reg-password">Mot de passe</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input id="reg-password" [(ngModel)]="register.password" type="password" placeholder="Créez un mot de passe sécurisé">
+          </div>
+        </div>
+        
+        <div class="auth-actions">
+          <button class="btn-primary" (click)="registerUser()">
+            <i class="fas fa-user-plus"></i> S'inscrire
+          </button>
+        </div>
+      </div>
+      
+      <div class="auth-footer">
+        <p>Déjà inscrit ? <a routerLink="/auth/login" routerLinkActive="active">Se connecter</a></p>
+      </div>
+    </div>
+  </div>
