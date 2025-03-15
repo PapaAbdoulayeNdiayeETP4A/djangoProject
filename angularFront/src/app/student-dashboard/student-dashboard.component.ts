@@ -1,13 +1,8 @@
-  import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+import { UserService } from '../services/user.service';
 
 interface Task {
   id: number;
@@ -34,37 +29,40 @@ interface Project {
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './student-dashboard.component.html',
   styleUrl: './student-dashboard.component.scss',
-  providers: [ApiService, FormBuilder]
+  providers: [ApiService, FormBuilder, UserService]
 })
+
 export class StudentDashboardComponent implements OnInit {
+
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
   projects: Project[] = [];
   selectedProject: Project | null = null;
   username: string = '';
   userId: number = 0;
-  
+  activeDropdownTaskId: string | number | null = null;
+
   showNewProjectModal: boolean = false;
   showNewTaskModal: boolean = false;
   showEditTaskModal: boolean = false;
-  
+
   projectForm: FormGroup;
   taskForm: FormGroup;
-  
+
   editingTask: Task | null = null;
-  
+
   taskStatuses = [
     { value: 'to_do', label: 'À faire' },
     { value: 'in_progress', label: 'En cours' },
     { value: 'completed', label: 'Terminé' }
   ];
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required]
     });
-    
+
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
@@ -76,13 +74,37 @@ export class StudentDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserData();
+    document.addEventListener('click', () => {
+      this.activeDropdownTaskId = null;
+    });
+  }
+
+  toggleDropdown(event: Event, task: any): void {
+    event.stopPropagation();
+
+    if (this.activeDropdownTaskId === task.id) {
+      this.activeDropdownTaskId = null;
+    } else {
+      this.activeDropdownTaskId = task.id;
+    }
+  }
+
+  logout(): void {
+    this.userService.logoutUser().subscribe(
+      () => {
+        window.location.href = '/';
+      },
+      (error) => {
+        console.error('Erreur lors de la déconnexion :', error);
+      }
+    )
   }
 
   loadUserData(): void {
     this.username = localStorage.getItem('user_username') || 'Étudiant';
     const userId = localStorage.getItem('user_id');
     this.userId = userId ? parseInt(userId) : 0;
-    
+
     const projectsData = localStorage.getItem('user_projects');
     if (projectsData) {
       this.projects = JSON.parse(projectsData);
@@ -101,20 +123,20 @@ export class StudentDashboardComponent implements OnInit {
     this.projectForm.reset();
     this.showNewProjectModal = true;
   }
-  
+
   closeNewProjectModal(): void {
     this.showNewProjectModal = false;
   }
-  
+
   openNewTaskModal(): void {
     this.taskForm.reset({ status: 'to_do', assigned_to: this.userId });
     this.showNewTaskModal = true;
   }
-  
+
   closeNewTaskModal(): void {
     this.showNewTaskModal = false;
   }
-  
+
   openEditTaskModal(task: Task): void {
     if (task.assigned_to === this.userId || this.isProjectOwner(this.selectedProject)) {
       this.editingTask = task;
@@ -130,20 +152,20 @@ export class StudentDashboardComponent implements OnInit {
       alert("Vous n'avez pas la permission de modifier cette tâche.");
     }
   }
-  
+
   closeEditTaskModal(): void {
     this.showEditTaskModal = false;
     this.editingTask = null;
   }
-  
+
   isProjectOwner(project: Project | null): boolean {
     return project ? project.owner === this.userId : false;
   }
-  
+
   canEditTask(task: Task): boolean {
     return task.assigned_to === this.userId || this.isProjectOwner(this.selectedProject);
   }
-  
+
   createProject(): void {
     if (this.projectForm.valid) {
       const newProject: Project = {
@@ -153,20 +175,20 @@ export class StudentDashboardComponent implements OnInit {
         owner: this.userId,
         tasks: []
       };
-      
+
       this.apiService.createProject(newProject).subscribe(
-      (savedProject) => {
-        this.projects.push(savedProject);
-        this.selectedProject = savedProject;
-        this.closeNewProjectModal();
-      },
-      (error) => {
-        console.error('Erreur lors de la création du projet :', error);
-      }
-    );
-  }
+        (savedProject) => {
+          this.projects.push(savedProject);
+          this.selectedProject = savedProject;
+          this.closeNewProjectModal();
+        },
+        (error) => {
+          console.error('Erreur lors de la création du projet :', error);
+        }
+      );
     }
-  
+  }
+
   createTask(): void {
     if (this.taskForm.valid && this.selectedProject) {
       const newTask: Task = {
@@ -179,7 +201,7 @@ export class StudentDashboardComponent implements OnInit {
         assigned_to: this.taskForm.value.assigned_to,
         created_at: new Date().toISOString()
       };
-      
+
       this.apiService.createTask(newTask).subscribe(
         (savedTask) => {
           if (this.selectedProject && this.selectedProject.tasks) {
@@ -194,7 +216,7 @@ export class StudentDashboardComponent implements OnInit {
       );
     }
   }
-  
+
   updateTask(): void {
     if (this.taskForm.valid && this.editingTask && this.selectedProject) {
       const updatedTask: Task = {
@@ -206,23 +228,23 @@ export class StudentDashboardComponent implements OnInit {
         assigned_to: this.taskForm.value.assigned_to,
         updated_at: new Date().toISOString()
       };
-      
+
       const taskIndex = this.selectedProject.tasks.findIndex(t => t.id === this.editingTask?.id);
       if (taskIndex !== -1) {
         this.selectedProject.tasks[taskIndex] = updatedTask;
         this.saveProjects();
       }
-      
+
       this.closeEditTaskModal();
     }
   }
-  
+
   deleteTask(task: Task): void {
     if (!this.isProjectOwner(this.selectedProject)) {
       alert("Seul le propriétaire du projet peut supprimer des tâches.");
       return;
     }
-    
+
     if (this.selectedProject && confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
       const taskIndex = this.selectedProject.tasks.findIndex(t => t.id === task.id);
       if (taskIndex !== -1) {
@@ -236,13 +258,17 @@ export class StudentDashboardComponent implements OnInit {
       }
     }
   }
-  
+
   updateTaskStatus(task: Task, newStatus: string): void {
     if (this.canEditTask(task)) {
       task.status = newStatus;
       task.updated_at = new Date().toISOString();
       this.saveProjects();
+      this.activeDropdownTaskId = null;
       this.apiService.updateTask(task).subscribe(
+        (response) => {
+          console.log('Tâche mise à jour :', response);
+        },
         (error) => {
           console.error('Erreur lors de la mise à jour de la tâche :', error);
         }
@@ -251,13 +277,13 @@ export class StudentDashboardComponent implements OnInit {
       alert("Vous n'avez pas la permission de modifier cette tâche.");
     }
   }
-  
+
   private getNextProjectId(): number {
     return this.projects.length > 0
       ? Math.max(...this.projects.map(p => p.id)) + 1
       : 1;
   }
-  
+
   private getNextTaskId(): number {
     let maxId = 0;
     this.projects.forEach(project => {
@@ -268,17 +294,17 @@ export class StudentDashboardComponent implements OnInit {
     });
     return maxId + 1;
   }
-  
+
   private saveProjects(): void {
     localStorage.setItem('user_projects', JSON.stringify(this.projects));
-    
+
     const allTasks = this.projects.reduce((tasks, project) => {
       if (project.tasks && project.tasks.length > 0) {
         return [...tasks, ...project.tasks];
       }
       return tasks;
     }, [] as Task[]);
-    
+
     localStorage.setItem('user_tasks', JSON.stringify(allTasks));
   }
 

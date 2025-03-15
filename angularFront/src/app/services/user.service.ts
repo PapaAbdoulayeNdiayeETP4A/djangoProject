@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { Observable, switchMap, tap, throwError } from 'rxjs';
+import { Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -77,8 +77,9 @@ export class UserService {
     );
   }
 
-  logoutUser() {
-    return this.http.get('http://127.0.0.1:8000/api/project/');
+  logoutUser(): Observable<any> {
+    localStorage.clear();
+    return of(null);
   }
 
 
