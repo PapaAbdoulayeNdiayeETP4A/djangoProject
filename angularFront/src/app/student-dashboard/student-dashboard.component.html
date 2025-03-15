@@ -1,263 +1,303 @@
 <div class="dashboard-container">
-    <nav class="dashboard-nav">
-        <div class="nav-logo">
-          <h2>GesPro</h2>
+  <nav class="dashboard-nav">
+    <div class="nav-logo">
+      <h2>GesPro</h2>
+    </div>
+    <div class="nav-user">
+      <span class="username">{{ username }}</span>
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+      </button>
+    </div>
+  </nav>
+  <header class="dashboard-header">
+  </header>
+
+  <div class="dashboard-content">
+    <!-- Sidebar with project list -->
+    <aside class="projects-sidebar">
+      <div class="sidebar-header">
+        <h2>Mes projets</h2>
+        <button class="btn-add" (click)="openNewProjectModal()">
+          <i class="fas fa-plus"></i> Nouveau
+        </button>
+      </div>
+      <div class="projects-list">
+        <div *ngIf="projects.length === 0" class="no-projects">
+          Aucun projet disponible
         </div>
-        <div class="nav-user">
-          <span class="username">{{ username }}</span>
-          <button class="btn-logout" (click)="logout()">
-            <i class="fas fa-sign-out-alt"></i> Se déconnecter
-          </button>
-        </div>
-      </nav>
-    <header class="dashboard-header">
-    </header>
-  
-    <div class="dashboard-content">
-      <!-- Sidebar with project list -->
-      <aside class="projects-sidebar">
-        <div class="sidebar-header">
-          <h2>Mes projets</h2>
-          <button class="btn-add" (click)="openNewProjectModal()">
-            <i class="fas fa-plus"></i> Nouveau
-          </button>
-        </div>
-        <div class="projects-list">
-          <div *ngIf="projects.length === 0" class="no-projects">
-            Aucun projet disponible
-          </div>
-          <div *ngFor="let project of projects" 
-               class="project-item" 
-               [class.active]="selectedProject?.id === project.id"
-               (click)="selectProject(project)">
-            <div class="project-title">{{ project.name }}</div>
-            <div class="project-stats">
-              <span class="task-count">{{ getTasksCount(project) }} tâches</span>
-              <span class="completed-count">{{ getCompletedTasksCount(project) }}/{{ getTasksCount(project) }}</span>
-            </div>
+        <div *ngFor="let project of projects" class="project-item" [class.active]="selectedProject?.id === project.id"
+          (click)="selectProject(project)">
+          <div class="project-title">{{ project.name }}</div>
+          <div class="project-stats">
+            <span class="task-count">{{ getTasksCount(project) }} tâches</span>
+            <span class="completed-count">{{ getCompletedTasksCount(project) }}/{{ getTasksCount(project)
+              }}</span>
           </div>
         </div>
-      </aside>
-  
-      <!-- Main content with details for selected project -->
-      <main class="project-details">
-        <div *ngIf="!selectedProject" class="no-selection">
-          <p>Sélectionnez un projet pour voir ses détails</p>
-        </div>
-  
-        <div *ngIf="selectedProject" class="project-content">
-          <div class="project-header">
-            <div>
-              <h2>{{ selectedProject.name }}</h2>
-              <p class="project-description">{{ selectedProject.description }}</p>
-            </div>
-            <div *ngIf="isProjectOwner(selectedProject)" class="project-actions">
-              <button class="btn-primary" (click)="openNewTaskModal()">
-                <i class="fas fa-plus"></i> Nouvelle tâche
-              </button>
-            </div>
+      </div>
+    </aside>
+
+    <!-- Main content with details for selected project -->
+    <main class="project-details">
+      <div *ngIf="!selectedProject" class="no-selection">
+        <p>Sélectionnez un projet pour voir ses détails</p>
+      </div>
+
+      <div *ngIf="selectedProject" class="project-content">
+        <div class="project-header">
+          <div>
+            <h2>{{ selectedProject.name }}</h2>
+            <p class="project-description">{{ selectedProject.description }}</p>
           </div>
-  
-          <div class="tasks-container">
-            <h3>Tâches</h3>
-            
-            <div *ngIf="!selectedProject.tasks || selectedProject.tasks.length === 0" class="no-tasks">
-              Aucune tâche pour ce projet
-            </div>
-            
-            <div *ngFor="let task of selectedProject.tasks" class="task-card">
-              <div class="task-header">
-                <h4>{{ task.title }}</h4>
-                <div class="task-actions">
-                    <div class="dropdown">
-                        <button class="dropdown-toggle" [class.disabled]="!canEditTask(task)" (click)="toggleDropdown($event, task)">
-                          <span class="task-status" [ngClass]="getStatusClass(task.status)">
-                            {{ getStatusLabel(task.status) }}
-                          </span>
-                          <i class="fas fa-chevron-down" *ngIf="canEditTask(task)"></i>
-                        </button>
-                        <div *ngIf="canEditTask(task) && activeDropdownTaskId === task.id" class="dropdown-menu">
-                          <button *ngFor="let status of taskStatuses" 
-                                  class="dropdown-item" 
-                                  [class.active]="task.status === status.value"
-                                  (click)="updateTaskStatus(task, status.value)">
-                            {{ status.label }}
-                          </button>
-                        </div>
-                      </div>
-                  <div class="task-buttons" *ngIf="canEditTask(task)">
-                    <button class="btn-icon" (click)="openEditTaskModal(task)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-danger" *ngIf="isProjectOwner(selectedProject)" (click)="deleteTask(task)">
-                        Supprimer
-                      <i class="fas fa-trash"></i>
+          <div *ngIf="isProjectOwner(selectedProject)" class="project-actions">
+            <button class="btn-primary" (click)="openNewTaskModal()">
+              <i class="fas fa-plus"></i> Nouvelle tâche
+            </button>
+          </div>
+        </div>
+
+        <div class="tasks-container">
+          <h3>Tâches</h3>
+
+          <div *ngIf="!selectedProject.tasks || selectedProject.tasks.length === 0" class="no-tasks">
+            Aucune tâche pour ce projet
+          </div>
+
+          <div *ngFor="let task of selectedProject.tasks" class="task-card">
+            <div class="task-header">
+              <h4>{{ task.title }}</h4>
+              <div class="task-actions">
+                <div class="dropdown">
+                  <button class="dropdown-toggle" [class.disabled]="!canEditTask(task)"
+                    (click)="toggleDropdown($event, task)">
+                    <span class="task-status" [ngClass]="getStatusClass(task.status)">
+                      {{ getStatusLabel(task.status) }}
+                    </span>
+                    <i class="fas fa-chevron-down" *ngIf="canEditTask(task)"></i>
+                  </button>
+                  <div *ngIf="canEditTask(task) && activeDropdownTaskId === task.id" class="dropdown-menu">
+                    <button *ngFor="let status of taskStatuses" class="dropdown-item"
+                      [class.active]="task.status === status.value" (click)="updateTaskStatus(task, status.value)">
+                      {{ status.label }}
                     </button>
                   </div>
                 </div>
+                <div class="task-buttons" *ngIf="canEditTask(task)">
+                  <button class="btn-icon" (click)="openEditTaskModal(task)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon" (click)="openAssignUserModal(task)">
+                    <i class="fas fa-user-plus"></i>
+                  </button>
+                  <button class="btn-danger" *ngIf="isProjectOwner(selectedProject)" (click)="deleteTask(task)">
+                    Supprimer
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
-              
-              <p class="task-description">{{ task.description }}</p>
-              
-              <div class="task-footer">
-                <span class="due-date">
-                  <i class="fas fa-calendar-alt"></i>
-                  Date limite: {{ task.due_date | date:'dd/MM/yyyy' }}
-                </span>
-                <span class="assigned-to" *ngIf="task.assigned_to === userId">
-                  <i class="fas fa-user"></i>
-                  Assigné à moi
-                </span>
-                <span class="assigned-to" *ngIf="task.assigned_to !== userId">
-                  <i class="fas fa-user"></i>
-                  Assigné à un autre utilisateur
-                </span>
-                <span class="updated-at" *ngIf="task.updated_at">
-                  <i class="fas fa-clock"></i>
-                  Mis à jour: {{ task.updated_at | date:'dd/MM/yyyy HH:mm' }}
-                </span>
+            </div>
+
+            <p class="task-description">{{ task.description }}</p>
+
+            <div class="task-footer">
+              <span class="due-date">
+                <i class="fas fa-calendar-alt"></i>
+                Date limite: {{ task.due_date | date:'dd/MM/yyyy' }}
+              </span>
+              <span class="assigned-to" *ngIf="task.assigned_to === userId">
+                <i class="fas fa-user"></i>
+                Assigné à moi
+              </span>
+              <span class="assigned-to" *ngIf="task.assigned_to !== userId">
+                <i class="fas fa-user"></i>
+                Assigné à un autre utilisateur
+              </span>
+              <span class="updated-at" *ngIf="task.updated_at">
+                <i class="fas fa-clock"></i>
+                Mis à jour: {{ task.updated_at | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+
+            <div class="modal" [class.show]="showAssignUserModal && assigningTask === task">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3>Assigner la tâche "{{ assigningTask?.title }}"</h3>
+                  <button class="btn-close" (click)="closeAssignUserModal()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="assignForm" (ngSubmit)="assignTask()">
+                    <div class="form-group">
+                      <label for="assigned_to">Assigner à</label>
+                      <select id="assigned_to" formControlName="assigned_to">
+                        <option value="">Sélectionner un utilisateur</option>
+                        <option *ngFor="let user of users" [value]="user.id">{{ user.username }}
+                        </option>
+                      </select>
+                      <div class="error-message"
+                        *ngIf="assignForm.get('assigned_to')?.invalid && assignForm.get('assigned_to')?.touched">
+                        L'utilisateur est requis.
+                      </div>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="button" class="btn-secondary" (click)="closeAssignUserModal()">Annuler</button>
+                      <button type="submit" class="btn-primary" [disabled]="assignForm.invalid">Assigner</button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
-  
-    <!-- Modal to create project -->
-    <div class="modal" [class.show]="showNewProjectModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Nouveau projet</h3>
-          <button class="btn-close" (click)="closeNewProjectModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="projectForm" (ngSubmit)="createProject()">
-            <div class="form-group">
-              <label for="project-name">Nom du projet</label>
-              <input type="text" id="project-name" formControlName="name" placeholder="Entrez le nom du projet">
-              <div class="error-message" *ngIf="projectForm.get('name')?.invalid && projectForm.get('name')?.touched">
-                Le nom du projet est requis (minimum 3 caractères)
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="project-description">Description</label>
-              <textarea id="project-description" formControlName="description" placeholder="Décrivez votre projet"></textarea>
-              <div class="error-message" *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
-                La description du projet est requise
-              </div>
-            </div>
-            
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" (click)="closeNewProjectModal()">Annuler</button>
-              <button type="submit" class="btn-primary" [disabled]="projectForm.invalid">Créer</button>
-            </div>
-          </form>
-        </div>
       </div>
-    </div>
-    
-    <!-- Modal to create new task -->
-    <div class="modal" [class.show]="showNewTaskModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Nouvelle tâche</h3>
-          <button class="btn-close" (click)="closeNewTaskModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="taskForm" (ngSubmit)="createTask()">
-            <div class="form-group">
-              <label for="task-title">Titre</label>
-              <input type="text" id="task-title" formControlName="title" placeholder="Titre de la tâche">
-              <div class="error-message" *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
-                Le titre de la tâche est requis (minimum 3 caractères)
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="task-description">Description</label>
-              <textarea id="task-description" formControlName="description" placeholder="Décrivez cette tâche"></textarea>
-              <div class="error-message" *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
-                La description de la tâche est requise
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="task-due-date">Date d'échéance</label>
-              <input type="date" id="task-due-date" formControlName="due_date">
-              <div class="error-message" *ngIf="taskForm.get('due_date')?.invalid && taskForm.get('due_date')?.touched">
-                La date d'échéance est requise
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="task-status">Statut</label>
-              <select id="task-status" formControlName="status">
-                <option *ngFor="let status of taskStatuses" [value]="status.value">{{ status.label }}</option>
-              </select>
-            </div>
-            
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" (click)="closeNewTaskModal()">Annuler</button>
-              <button type="submit" class="btn-primary" [disabled]="taskForm.invalid">Créer</button>
-            </div>
-          </form>
-        </div>
+    </main>
+  </div>
+
+  <!-- Modal to create project -->
+  <div class="modal" [class.show]="showNewProjectModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Nouveau projet</h3>
+        <button class="btn-close" (click)="closeNewProjectModal()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-    </div>
-    
-    <!-- Modal to edit task -->
-    <div class="modal" [class.show]="showEditTaskModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Modifier la tâche</h3>
-          <button class="btn-close" (click)="closeEditTaskModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="taskForm" (ngSubmit)="updateTask()">
-            <div class="form-group">
-              <label for="edit-task-title">Titre</label>
-              <input type="text" id="edit-task-title" formControlName="title" placeholder="Titre de la tâche">
-              <div class="error-message" *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
-                Le titre de la tâche est requis (minimum 3 caractères)
-              </div>
+      <div class="modal-body">
+        <form [formGroup]="projectForm" (ngSubmit)="createProject()">
+          <div class="form-group">
+            <label for="project-name">Nom du projet</label>
+            <input type="text" id="project-name" formControlName="name" placeholder="Entrez le nom du projet">
+            <div class="error-message" *ngIf="projectForm.get('name')?.invalid && projectForm.get('name')?.touched">
+              Le nom du projet est requis (minimum 3 caractères)
             </div>
-            
-            <div class="form-group">
-              <label for="edit-task-description">Description</label>
-              <textarea id="edit-task-description" formControlName="description" placeholder="Décrivez cette tâche"></textarea>
-              <div class="error-message" *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
-                La description de la tâche est requise
-              </div>
+          </div>
+
+          <div class="form-group">
+            <label for="project-description">Description</label>
+            <textarea id="project-description" formControlName="description"
+              placeholder="Décrivez votre projet"></textarea>
+            <div class="error-message"
+              *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
+              La description du projet est requise
             </div>
-            
-            <div class="form-group">
-              <label for="edit-task-due-date">Date d'échéance</label>
-              <input type="date" id="edit-task-due-date" formControlName="due_date">
-              <div class="error-message" *ngIf="taskForm.get('due_date')?.invalid && taskForm.get('due_date')?.touched">
-                La date d'échéance est requise
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="edit-task-status">Statut</label>
-              <select id="edit-task-status" formControlName="status">
-                <option *ngFor="let status of taskStatuses" [value]="status.value">{{ status.label }}</option>
-              </select>
-            </div>
-            
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" (click)="closeEditTaskModal()">Annuler</button>
-              <button type="submit" class="btn-primary" [disabled]="taskForm.invalid">Enregistrer</button>
-            </div>
-          </form>
-        </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeNewProjectModal()">Annuler</button>
+            <button type="submit" class="btn-primary" [disabled]="projectForm.invalid">Créer</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+
+  <!-- Modal to create new task -->
+  <div class="modal" [class.show]="showNewTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Nouvelle tâche</h3>
+        <button class="btn-close" (click)="closeNewTaskModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="taskForm" (ngSubmit)="createTask()">
+          <div class="form-group">
+            <label for="task-title">Titre</label>
+            <input type="text" id="task-title" formControlName="title" placeholder="Titre de la tâche">
+            <div class="error-message" *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
+              Le titre de la tâche est requis (minimum 3 caractères)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-description">Description</label>
+            <textarea id="task-description" formControlName="description" placeholder="Décrivez cette tâche"></textarea>
+            <div class="error-message"
+              *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
+              La description de la tâche est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-due-date">Date d'échéance</label>
+            <input type="date" id="task-due-date" formControlName="due_date">
+            <div class="error-message" *ngIf="taskForm.get('due_date')?.invalid && taskForm.get('due_date')?.touched">
+              La date d'échéance est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-status">Statut</label>
+            <select id="task-status" formControlName="status">
+              <option *ngFor="let status of taskStatuses" [value]="status.value">{{ status.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeNewTaskModal()">Annuler</button>
+            <button type="submit" class="btn-primary" [disabled]="taskForm.invalid">Créer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal to edit task -->
+  <div class="modal" [class.show]="showEditTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Modifier la tâche</h3>
+        <button class="btn-close" (click)="closeEditTaskModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="taskForm" (ngSubmit)="updateTask()">
+          <div class="form-group">
+            <label for="edit-task-title">Titre</label>
+            <input type="text" id="edit-task-title" formControlName="title" placeholder="Titre de la tâche">
+            <div class="error-message" *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
+              Le titre de la tâche est requis (minimum 3 caractères)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-task-description">Description</label>
+            <textarea id="edit-task-description" formControlName="description"
+              placeholder="Décrivez cette tâche"></textarea>
+            <div class="error-message"
+              *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
+              La description de la tâche est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-task-due-date">Date d'échéance</label>
+            <input type="date" id="edit-task-due-date" formControlName="due_date">
+            <div class="error-message" *ngIf="taskForm.get('due_date')?.invalid && taskForm.get('due_date')?.touched">
+              La date d'échéance est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-task-status">Statut</label>
+            <select id="edit-task-status" formControlName="status">
+              <option *ngFor="let status of taskStatuses" [value]="status.value">{{ status.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeEditTaskModal()">Annuler</button>
+            <button type="submit" class="btn-primary" [disabled]="taskForm.invalid">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

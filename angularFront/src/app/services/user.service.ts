@@ -77,6 +77,10 @@ export class UserService {
     );
   }
 
+  getUsers(): Observable<any> {
+    return this.http.get(this.registerUrl);
+  }
+
   logoutUser(): Observable<any> {
     localStorage.clear();
     return of(null);

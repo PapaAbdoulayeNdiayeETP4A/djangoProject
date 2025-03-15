@@ -48,8 +48,13 @@ export class ProfessorDashboardComponent implements OnInit {
 
   projectForm: FormGroup;
   taskForm: FormGroup;
+  assignForm: FormGroup;
 
   editingTask: Task | null = null;
+
+  showAssignUserModal: boolean = false;
+  assigningTask: any;
+  users: any[] = [];
 
   taskStatuses = [
     { value: 'to_do', label: 'À faire' },
@@ -70,12 +75,26 @@ export class ProfessorDashboardComponent implements OnInit {
       status: ['to_do', Validators.required],
       assigned_to: [null]
     });
+
+    this.assignForm = this.fb.group({
+      assigned_to: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
     this.loadUserData();
     document.addEventListener('click', () => {
       this.activeDropdownTaskId = null;
+    });
+    this.fetchUsers();
+    this.assignForm = this.fb.group({
+      assigned_to: [null, Validators.required]
+    });
+  }
+
+  fetchUsers(): void {
+    this.userService.getUsers().subscribe((users) => {
+      this.users = users;
     });
   }
 
@@ -275,6 +294,39 @@ export class ProfessorDashboardComponent implements OnInit {
       )
     } else {
       alert("Vous n'avez pas la permission de modifier cette tâche.");
+    }
+  }
+
+  openAssignUserModal(task: any): void {
+    if (this.isProjectOwner(this.selectedProject) || task.assigned_to === this.userId) {
+      this.assigningTask = task;
+      if (this.assignForm) {
+        this.assignForm.setValue({
+          assigned_to: task.assigned_to
+        });
+      }
+      this.showAssignUserModal = true;
+    } else {
+      alert("Vous n'avez pas la permission d'assigner cette tâche.");
+    }
+  }
+
+  closeAssignUserModal(): void {
+    this.showAssignUserModal = false;
+    this.assigningTask = null;
+  }
+
+  assignTask(): void {
+    if (this.assignForm && this.assignForm.valid && this.assigningTask) {
+      const assignedUserId = this.assignForm.value.assigned_to;
+      this.assigningTask.assigned_to = assignedUserId;
+      this.apiService.assignTask(this.assigningTask ).subscribe(() => {
+        const updatedTask = this.selectedProject?.tasks?.find(t => t.id === this.assigningTask.id);
+        if (updatedTask) {
+          updatedTask.assigned_to = assignedUserId;
+        }
+        this.closeAssignUserModal();
+      });
     }
   }
 
