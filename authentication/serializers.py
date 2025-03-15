@@ -8,8 +8,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_teacher', 'is_student', 'avatar', 'projects')
-        extra_kwargs = {'password': {'write_only': True, 'required': True}}
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'password',
+                  'is_teacher', 'is_student', 'avatar', 'projects')
+        extra_kwargs = {'password': {'write_only': True, 'required': False}, 'first_name': {'required': False},
+                        'last_name': {'required': False}}
 
     def create(self, validated_data):
         # We try to hash the password

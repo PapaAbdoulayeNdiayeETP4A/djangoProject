@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
 import { Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
@@ -25,6 +24,10 @@ export class UserService {
       }),
       switchMap(() => this.getUserInfo())
     );
+  }
+
+  updateUserProfile(profileData: any, id: number): Observable<any> {
+    return this.http.put(this.registerUrl + id, profileData);
   }
 
 

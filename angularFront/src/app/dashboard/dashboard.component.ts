@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 interface Task {
   id: number;
@@ -25,15 +26,18 @@ interface Project {
 }
 
 @Component({
-  selector: 'app-professor-dashboard',
+  selector: 'app-dashboard',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './professor-dashboard.component.html',
-  styleUrl: './professor-dashboard.component.scss',
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
   providers: [ApiService, FormBuilder, UserService]
 })
 
-export class ProfessorDashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit {
 
+  userProfile: any;
+  baseUrl: string = 'http://localhost:8000';
+  showProfileMenu: boolean = false;
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
   projects: Project[] = [];
@@ -62,7 +66,7 @@ export class ProfessorDashboardComponent implements OnInit {
     { value: 'completed', label: 'Terminé' }
   ];
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private router: Router) {
     this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required]
@@ -83,13 +87,39 @@ export class ProfessorDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserData();
+
     document.addEventListener('click', () => {
       this.activeDropdownTaskId = null;
     });
+
     this.fetchUsers();
     this.assignForm = this.fb.group({
       assigned_to: [null, Validators.required]
     });
+
+    this.getUserProfile();
+  }
+
+  getUserProfile() {
+    this.userService.getUserInfo().subscribe(
+      (profile) => {
+        this.userProfile = profile;
+        if (this.userProfile?.avatar && !this.userProfile.avatar.startsWith('http')) {
+          this.userProfile.avatar = this.baseUrl + this.userProfile.avatar;
+        }
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération du profil:', error);
+      }
+    );
+  }
+
+  toggleProfileMenu() {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  viewProfile() {
+    this.router.navigate(['/dashboard/profil']);
   }
 
   fetchUsers(): void {
