@@ -25,4 +25,16 @@ export class ApiService {
     return this.http.get(this.baseUrl + '/api/task/', {headers: this.httpHeaders});
   }
 
+  createTask(task: any): Observable<any> {
+    return this.http.post(this.baseUrl + '/api/task/', task);
+  }
+
+  updateTask(task: any): Observable<any> {
+    return this.http.put(this.baseUrl + '/api/task/' + task.id, task);
+  }
+
+  deleteTask(taskId: number): Observable<any> {
+    return this.http.delete(this.baseUrl + '/api/task/' + taskId);
+  }
+
 }

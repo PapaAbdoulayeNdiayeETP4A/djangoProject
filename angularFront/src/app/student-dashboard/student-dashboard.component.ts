@@ -1,7 +1,7 @@
   import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ApiService } from '../services/api.service'; // Adjust the path as needed
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ApiService } from '../services/api.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 interface User {
   id: number;
@@ -44,19 +44,15 @@ export class StudentDashboardComponent implements OnInit {
   username: string = '';
   userId: number = 0;
   
-  // Modals
   showNewProjectModal: boolean = false;
   showNewTaskModal: boolean = false;
   showEditTaskModal: boolean = false;
   
-  // Forms
   projectForm: FormGroup;
   taskForm: FormGroup;
   
-  // Editing
   editingTask: Task | null = null;
   
-  // Statuses
   taskStatuses = [
     { value: 'to_do', label: 'À faire' },
     { value: 'in_progress', label: 'En cours' },
@@ -111,7 +107,7 @@ export class StudentDashboardComponent implements OnInit {
   }
   
   openNewTaskModal(): void {
-    this.taskForm.reset({ status: 'todo', assigned_to: this.userId });
+    this.taskForm.reset({ status: 'to_do', assigned_to: this.userId });
     this.showNewTaskModal = true;
   }
   
@@ -180,18 +176,22 @@ export class StudentDashboardComponent implements OnInit {
         status: this.taskForm.value.status,
         due_date: this.taskForm.value.due_date,
         project: this.selectedProject.id,
-        assigned_to: this.taskForm.value.assigned_to || this.userId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        assigned_to: this.taskForm.value.assigned_to,
+        created_at: new Date().toISOString()
       };
       
-      if (!this.selectedProject.tasks) {
-        this.selectedProject.tasks = [];
-      }
-      
-      this.selectedProject.tasks.push(newTask);
-      this.saveProjects();
-      this.closeNewTaskModal();
+      this.apiService.createTask(newTask).subscribe(
+        (savedTask) => {
+          if (this.selectedProject && this.selectedProject.tasks) {
+            this.selectedProject.tasks.push(savedTask);
+          }
+          this.saveProjects();
+          this.closeNewTaskModal();
+        },
+        (error) => {
+          console.error('Erreur lors de la création de la tâche :', error);
+        }
+      );
     }
   }
   
@@ -228,6 +228,11 @@ export class StudentDashboardComponent implements OnInit {
       if (taskIndex !== -1) {
         this.selectedProject.tasks.splice(taskIndex, 1);
         this.saveProjects();
+        this.apiService.deleteTask(task.id).subscribe(
+          (error) => {
+            console.error('Erreur lors de la suppression de la tâche :', error);
+          }
+        );
       }
     }
   }
@@ -237,6 +242,11 @@ export class StudentDashboardComponent implements OnInit {
       task.status = newStatus;
       task.updated_at = new Date().toISOString();
       this.saveProjects();
+      this.apiService.updateTask(task).subscribe(
+        (error) => {
+          console.error('Erreur lors de la mise à jour de la tâche :', error);
+        }
+      )
     } else {
       alert("Vous n'avez pas la permission de modifier cette tâche.");
     }
